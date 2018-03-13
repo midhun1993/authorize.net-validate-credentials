@@ -33,7 +33,20 @@ use net\authorize\api\controller as AnetController;
       $controller = new AnetController\AuthenticateTestController($request);
 
       try{
-          $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::PRODUCTION);
+        switch ($_POST['environment']) {
+          case 'SANDBOX':
+              $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+            break;
+
+          case 'PRODUCTION':
+            $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::PRODUCTION);
+            break;
+
+          default:
+            $response = $controller->executeWithApiResponse(\net\authorize\api\constants\ANetEnvironment::SANDBOX);
+            break;
+        }
+
 
            $alert = "alert-danger";
             $alert_message = "You provide a invalid credentials";
@@ -78,6 +91,14 @@ use net\authorize\api\controller as AnetController;
       </div>
       <div class="form-group">
         <input type="text" class="form-control" name="txtTransactionKey" id="txtTransactionKey-main" placeholder="Transaction Key" autocomplete="off" value="<?php echo (isset($_POST['txtTransactionKey'])) ?  $_POST['txtTransactionKey'] : ''; ?>">
+      </div>
+      <div class="form-group">
+     <label for="environment">Environment</label>
+     <select class="form-control" name="environment" id="environment">
+       <option value="SANDBOX" <?php echo (isset($_POST['environment']) && $_POST['environment']=='SANDBOX' ) ? 'selected' : ''; ?>>SANDBOX</option>
+       <option value="PRODUCTION" <?php echo (isset($_POST['environment']) && $_POST['environment']=='PRODUCTION' ) ? 'selected' : ''; ?>>PRODUCTION</option>
+    </select>
+
       </div>
       <button class="btn btn-lg btn-primary btn-block" name="submit" value="submit" type="submit">Validate</button>
     </form>
